@@ -17,7 +17,7 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, LyError> {
 }
 
 async fn load_page(req: HttpRequest) -> Result<HttpResponse, LyError> {
-    let content_path = "www/".to_string() + req.match_info().query("path");
+    let content_path = "www/".to_string() + req.match_info().query("path") + ".html";
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
