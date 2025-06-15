@@ -50,3 +50,9 @@ impl From<std::io::Error> for LyError {
         }
     }
 }
+
+impl From<regex::Error> for LyError {
+    fn from(_err: regex::Error) -> Self {
+        Self::InternalServerError
+    }
+}

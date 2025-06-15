@@ -1,20 +1,31 @@
 use lyra_pink::error::*;
+use lyra_pink::ssg::*;
 
-use std::path::PathBuf;
+use std::fs;
 
-use actix_files::{Files, NamedFile};
-use actix_web::{web, App, HttpRequest, HttpServer,
-};
+use actix_files::Files;
+use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, HttpResponse, HttpServer};
 
-async fn index(_req: HttpRequest) -> Result<NamedFile, LyError> {
-    Ok(NamedFile::open("www/index.html")?)
+async fn index(_req: HttpRequest) -> Result<HttpResponse, LyError> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .insert_header(ContentType::html())
+        .body(LyWebpage::read_file("templates/template.html")?
+            .fill_template("content", &fs::read_to_string("www/index.html")?)
+            .contents
+        )
+    )
 }
 
-async fn load_page(req: HttpRequest) -> Result<NamedFile, LyError> {
-    let path = "www/".to_string() + req.match_info().query("path");
-    let path_buf: PathBuf = (path + ".html").parse().unwrap();
+async fn load_page(req: HttpRequest) -> Result<HttpResponse, LyError> {
+    let content_path = "www/".to_string() + req.match_info().query("path");
 
-    Ok(NamedFile::open(path_buf)?)
+    Ok(HttpResponse::build(StatusCode::OK)
+        .insert_header(ContentType::html())
+        .body(LyWebpage::read_file("templates/template.html")?
+            .fill_template("content", &fs::read_to_string(content_path)?)
+            .contents
+        )
+    )
 }
 
 #[actix_web::main]
