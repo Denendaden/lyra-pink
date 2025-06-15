@@ -1,4 +1,4 @@
-use lyra_pink::*;
+use lyra_pink::error::*;
 
 use std::path::PathBuf;
 
