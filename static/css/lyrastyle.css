@@ -1,5 +1,5 @@
 body, html {
-    background-color: oklch(0.95 0.0252 329.72);
+    background-color: lavenderblush;
     font-family: "Noto Sans", sans-serif;
     color: oklch(0.1722 0 203.82);
 }
@@ -26,6 +26,10 @@ a:active {
 
 ul.no-bullets {
     list-style-type: none;
+}
+
+div.status {
+    white-space: pre-wrap;
 }
 
 div#center {

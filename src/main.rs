@@ -2,6 +2,8 @@ mod error;
 
 use error::*;
 
+use std::env;
+
 use lyssg::ssg::*;
 
 use actix_files::Files;
@@ -13,6 +15,11 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
         .body(LyWebpage::from_file("templates/main.html")?
             .fill_from_file("content", "www/index.html")?
             .resolve_ifs("/")?
+            // add status information
+            .fill_from_file(
+                "status",
+                env::var("STATUS_FILE").unwrap_or("www/status.md".to_string()),
+            )?
             .contents
         )
     )
