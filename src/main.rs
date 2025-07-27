@@ -10,7 +10,7 @@ use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, 
 async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::from_file("templates/template.html")?
+        .body(LyWebpage::from_file("templates/main.html")?
             .fill_from_file("content", "www/index.html")?
             .contents
         )
@@ -22,7 +22,7 @@ async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::from_file("templates/template.html")?
+        .body(LyWebpage::from_file("templates/main.html")?
             .fill_from_file("content", content_path)?
             .contents
         )
