@@ -10,13 +10,13 @@
         <div id="center">
             <div id="sidebar">
                 <ul class="no-bullets">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="projects">Projects</a></li>
-                    <li><a href="photos">Photos</a></li>
-                    <li><a href="blog">Blog</a></li>
+                    <li>[[IF / <b>Home</b> ELSE <a href="/">Home</a>]]</li>
+                    <li>[[IF projects <b>Projects</b> ELSE <a href="projects">Projects</a>]]</li>
+                    <li>[[IF photos <b>Photos</b> ELSE <a href="photos">Photos</a>]]</li>
+                    <li>[[IF blog <b>Blog</b> ELSE <a href="blog">Blog</a>]]</li>
                     <li><a href="static/resume.pdf">Resume</a></li>
                     <hr>
-                    <li><a href="contact">Contact</a></li>
+                    <li>[[IF contact <b>Contact</b> ELSE <a href="contact">Contact</a>]]</li>
                 </ul>
             </div>
             <div id="contents">

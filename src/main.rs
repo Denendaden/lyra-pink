@@ -12,18 +12,21 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
         .insert_header(ContentType::html())
         .body(LyWebpage::from_file("templates/main.html")?
             .fill_from_file("content", "www/index.html")?
+            .resolve_ifs("/")?
             .contents
         )
     )
 }
 
 async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
-    let content_path = "www/".to_string() + req.match_info().query("path") + ".html";
+    let path = req.match_info().query("path");
+    let content_path = "www/".to_string() + path + ".html";
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
         .body(LyWebpage::from_file("templates/main.html")?
             .fill_from_file("content", content_path)?
+            .resolve_ifs(path)?
             .contents
         )
     )
