@@ -1,11 +1,15 @@
-use lyssg::{error::*, ssg::*};
+mod error;
+
+use error::*;
+
+use lyssg::ssg::*;
 
 use std::fs;
 
 use actix_files::Files;
 use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, HttpResponse, HttpServer};
 
-async fn index(_req: HttpRequest) -> Result<HttpResponse, LyError> {
+async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
         .body(LyWebpage::read_file("templates/template.html")?
@@ -15,7 +19,7 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, LyError> {
     )
 }
 
-async fn load_page(req: HttpRequest) -> Result<HttpResponse, LyError> {
+async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let content_path = "www/".to_string() + req.match_info().query("path") + ".html";
 
     Ok(HttpResponse::build(StatusCode::OK)
