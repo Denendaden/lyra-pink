@@ -4,16 +4,14 @@ use error::*;
 
 use lyssg::ssg::*;
 
-use std::fs;
-
 use actix_files::Files;
 use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, HttpResponse, HttpServer};
 
 async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::read_file("templates/template.html")?
-            .fill_template("content", &fs::read_to_string("www/index.html")?)
+        .body(LyWebpage::from_file("templates/template.html")?
+            .fill_from_file("content", "www/index.html")?
             .contents
         )
     )
@@ -24,8 +22,8 @@ async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::read_file("templates/template.html")?
-            .fill_template("content", &fs::read_to_string(content_path)?)
+        .body(LyWebpage::from_file("templates/template.html")?
+            .fill_from_file("content", content_path)?
             .contents
         )
     )
