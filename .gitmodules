@@ -1,0 +1,3 @@
+[submodule "lyssg"]
+	path = lyssg
+	url = https://github.com/Denendaden/lyssg
