@@ -1,5 +1,4 @@
-use lyra_pink::error::*;
-use lyra_pink::ssg::*;
+use lyssg::{error::*, ssg::*};
 
 use std::fs;
 
