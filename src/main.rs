@@ -2,7 +2,7 @@ mod error;
 
 use error::*;
 
-use std::env;
+use std::{env, path::Path};
 
 use lyssg::ssg::*;
 
@@ -25,6 +25,39 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     )
 }
 
+async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
+    let mut webpage = LyWebpage::from_file("templates/main.html")?
+        .fill_from_file("content", "www/photos.html")?
+        .resolve_ifs("photos")?;
+
+    let photos_dir = Path::new("static/photos");
+    if let Ok(d) = photos_dir.read_dir() {
+        for shoot in d {
+            if let Ok(s) = shoot {
+                if s.path().is_dir() {
+                    let mut gallery_html = "<div class=\"photo-gallery\">".to_string();
+                    if let Ok(photos) = s.path().read_dir() {
+                        for photo in photos {
+                            if let Ok(p) = photo {
+                                let path = p.path();
+                                let spath = path.to_string_lossy();
+                                gallery_html += &format!("<img src=\"{spath}\">").to_string();
+                            }
+                        }
+                    }
+                    gallery_html += "</div>";
+                    webpage = webpage.fill_with_str(&s.file_name().to_string_lossy(), &gallery_html);
+                }
+            }
+        }
+    }
+
+    Ok(HttpResponse::build(StatusCode::OK)
+        .insert_header(ContentType::html())
+        .body(webpage.contents)
+    )
+}
+
 async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let path = req.match_info().query("path");
     let content_path = "www/".to_string() + path + ".html";
@@ -44,6 +77,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(index))
+            .route("/photos", web::get().to(photos))
             .route("/{path}", web::get().to(load_page))
             .service(Files::new("/static", "static"))
     })

@@ -24,15 +24,45 @@ a:active {
     color: oklch(0.44 0.1155 230.29);
 }
 
-ul.no-bullets {
+.no-bullets {
     list-style-type: none;
 }
 
-div.status {
+.status {
     white-space: pre-wrap;
 }
 
-div#center {
+.photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 4px;
+    justify-content: center;
+}
+
+.photo-gallery img {
+    flex: 21%;
+    padding: 0 4px;
+    margin-top: 8px;
+    vertical-align: middle;
+    width: 100%;
+    max-width: 30%;
+}
+
+@media screen and (max-width: 800px) {
+    .photo-gallery img {
+        flex: 40%;
+        max-width: 50%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .photo-gallery img {
+        flex: 100%;
+        max-width: 100%;
+    }
+}
+
+#center {
     margin: auto;
     display: flex;
     flex-flow: row wrap;
@@ -40,11 +70,11 @@ div#center {
     gap: 1cm;
 }
 
-div#sidebar {
+#sidebar {
     width: 3cm;
     text-align: right;
 }
 
-div#contents {
+#contents {
     width: 24cm;
 }
