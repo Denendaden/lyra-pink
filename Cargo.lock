@@ -816,11 +816,11 @@ version = "0.1.0"
 dependencies = [
  "actix-files",
  "actix-web",
- "lyssg",
+ "lyweb",
 ]
 
 [[package]]
-name = "lyssg"
+name = "lyweb"
 version = "0.1.1"
 dependencies = [
  "markdown",

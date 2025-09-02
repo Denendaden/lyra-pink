@@ -4,7 +4,7 @@ use error::*;
 
 use std::{env, path::Path};
 
-use lyssg::ssg::*;
+use lyweb::*;
 
 use actix_files::Files;
 use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, HttpResponse, HttpServer};

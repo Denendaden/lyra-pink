@@ -1,4 +1,4 @@
-use lyssg::{error::*, ssg::*};
+use lyweb::{*, error::*};
 
 use std::{error::Error, fmt};
 
