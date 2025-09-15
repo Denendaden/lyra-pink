@@ -2,7 +2,7 @@ mod error;
 
 use error::*;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use lyweb::*;
 
@@ -12,8 +12,8 @@ use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, 
 async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::from_file("templates/main.html")?
-            .fill_from_file("content", "pages/index.html")?
+        .body(LyWebpage::from_file("www/templates/main.html")?
+            .fill_from_file("content", "www/pages/index.html")?
             .resolve_ifs("/")?
             .contents
         )
@@ -21,11 +21,11 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
 }
 
 async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
-    let mut webpage = LyWebpage::from_file("templates/main.html")?
-        .fill_from_file("content", "pages/photos.html")?
+    let mut webpage = LyWebpage::from_file("www/templates/main.html")?
+        .fill_from_file("content", "www/pages/photos.html")?
         .resolve_ifs("photos")?;
 
-    let photos_dir = Path::new("static/photos");
+    let photos_dir = Path::new("www/static/photos");
     if let Ok(d) = photos_dir.read_dir() {
         for shoot in d {
             if let Ok(s) = shoot {
@@ -34,7 +34,8 @@ async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
                     if let Ok(photos) = s.path().read_dir() {
                         for photo in photos {
                             if let Ok(p) = photo {
-                                let path = p.path();
+                                // remove first part of path (the www part)
+                                let path = PathBuf::from_iter(p.path().components().skip(1));
                                 let spath = path.to_string_lossy();
                                 gallery_html += &format!("<img src=\"{spath}\">").to_string();
                             }
@@ -55,11 +56,11 @@ async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
 
 async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let path = req.match_info().query("path");
-    let content_path = "pages/".to_string() + path + ".html";
+    let content_path = "www/pages/".to_string() + path + ".html";
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
-        .body(LyWebpage::from_file("templates/main.html")?
+        .body(LyWebpage::from_file("www/templates/main.html")?
             .fill_from_file("content", content_path)?
             .resolve_ifs(path)?
             .contents
@@ -74,9 +75,9 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(index))
             .route("/photos", web::get().to(photos))
             .route("/{path}", web::get().to(load_page))
-            .service(Files::new("/static", "static"))
+            .service(Files::new("/static", "www/static"))
     })
-        .bind(("127.0.0.1", 5566))?
+        .bind(("0.0.0.0", 5566))?
         .run()
         .await
 }
