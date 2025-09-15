@@ -2,7 +2,7 @@ mod error;
 
 use error::*;
 
-use std::{env, path::Path};
+use std::path::Path;
 
 use lyweb::*;
 
@@ -13,13 +13,8 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
         .body(LyWebpage::from_file("templates/main.html")?
-            .fill_from_file("content", "www/index.html")?
+            .fill_from_file("content", "pages/index.html")?
             .resolve_ifs("/")?
-            // add status information
-            .fill_from_file(
-                "status",
-                env::var("STATUS_FILE").unwrap_or("www/status.md".to_string()),
-            )?
             .contents
         )
     )
@@ -27,7 +22,7 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
 
 async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let mut webpage = LyWebpage::from_file("templates/main.html")?
-        .fill_from_file("content", "www/photos.html")?
+        .fill_from_file("content", "pages/photos.html")?
         .resolve_ifs("photos")?;
 
     let photos_dir = Path::new("static/photos");
@@ -60,7 +55,7 @@ async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
 
 async fn load_page(req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let path = req.match_info().query("path");
-    let content_path = "www/".to_string() + path + ".html";
+    let content_path = "pages/".to_string() + path + ".html";
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
@@ -81,7 +76,7 @@ async fn main() -> std::io::Result<()> {
             .route("/{path}", web::get().to(load_page))
             .service(Files::new("/static", "static"))
     })
-        .bind(("127.0.0.1", 8000))?
+        .bind(("127.0.0.1", 5566))?
         .run()
         .await
 }

@@ -24,6 +24,42 @@ a:active {
     color: oklch(0.44 0.1155 230.29);
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.split {
+    display: flex;
+    flex-flow: row;
+}
+
+.left {
+    width: 65%;
+    padding-right: 8px;
+}
+
+.right {
+    max-width: 8cm;
+    padding-left: 8px;
+}
+
+@media screen and (max-width: 600px) {
+    .split {
+        flex-flow: wrap;
+    }
+
+    .left {
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .right {
+        max-width: 100%;
+        padding-left: 0;
+    }
+}
+
 .no-bullets {
     list-style-type: none;
 }
