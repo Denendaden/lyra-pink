@@ -2,7 +2,7 @@ mod error;
 
 use error::*;
 
-use std::path::{Path, PathBuf};
+use std::{env, path::{Path, PathBuf}};
 
 use lyweb::*;
 
@@ -11,6 +11,58 @@ use actix_web::{web, App, http::{header::ContentType, StatusCode}, HttpRequest, 
 use reqwest::Url;
 use chrono;
 use serde_json::Value;
+
+struct ApodData {
+    copyright: Option<String>,
+    title: Option<String>,
+    explanation: Option<String>,
+    date: Option<String>,
+    url: Option<String>,
+}
+
+impl ApodData {
+    fn new() -> Self {
+        ApodData {
+            copyright: None,
+            title: None,
+            explanation: None,
+            date: None,
+            url: None,
+        }
+    }
+}
+
+async fn get_apod_data() -> Result<ApodData, ApiError> {
+    let key = env::var("NASA_API_KEY")?;
+    let apod_url = Url::parse_with_params(
+        "https://api.nasa.gov/planetary/apod",
+        &[("api_key", key)]
+    )?;
+
+    let response = reqwest::get(apod_url).await?.text().await?;
+
+    let response_json = serde_json::from_str::<Value>(&response)?;
+
+    let mut apod_data = ApodData::new();
+
+    if let Some(copyright) = response_json.get("copyright") {
+        apod_data.copyright = Some(copyright.to_string().trim_matches('"').to_string());
+    }
+    if let Some(title) = response_json.get("title") {
+        apod_data.title = Some(title.to_string().trim_matches('"').to_string());
+    }
+    if let Some(explanation) = response_json.get("explanation") {
+        apod_data.explanation = Some(explanation.to_string().trim_matches('"').to_string());
+    }
+    if let Some(date) = response_json.get("date") {
+        apod_data.date = Some(date.to_string().trim_matches('"').to_string());
+    }
+    if let Some(url) = response_json.get("url") {
+        apod_data.url = Some(url.to_string().trim_matches('"').to_string());
+    }
+
+    Ok(apod_data)
+}
 
 struct NavyData {
     phase: Option<String>,
@@ -97,6 +149,12 @@ async fn get_navy_moon_data() -> Result<NavyData, ApiError> {
 
 async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     let navy_data = get_navy_moon_data().await.unwrap_or(NavyData::new());
+    let apod_data = get_apod_data().await.unwrap_or(ApodData::new());
+
+    let apod_image = match apod_data.url {
+        Some(url) => format!("<img src=\"{url}\">"),
+        None => "No image supplied; APOD is likely a video -- <a href=\"https://apod.nasa.gov\">check here</a>.".to_string(),
+    };
 
     Ok(HttpResponse::build(StatusCode::OK)
         .insert_header(ContentType::html())
@@ -109,6 +167,11 @@ async fn index(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
             .fill_with_str("sunset", &navy_data.sunset.unwrap_or(" None".to_string()))
             .fill_with_str("moonrise", &navy_data.moonrise.unwrap_or(" None".to_string()))
             .fill_with_str("moonset", &navy_data.moonset.unwrap_or(" None".to_string()))
+            .fill_with_str("apod_title", &apod_data.title.unwrap_or("Unknown".to_string()))
+            .fill_with_str("apod_date", &apod_data.date.unwrap_or("unknown".to_string()))
+            .fill_with_str("apod_copyright", &apod_data.copyright.unwrap_or("unknown".to_string()))
+            .fill_with_str("apod_image", &apod_image)
+            .fill_with_str("apod_explanation", &apod_data.explanation.unwrap_or("No explanation provided".to_string()))
             .contents
         )
     )

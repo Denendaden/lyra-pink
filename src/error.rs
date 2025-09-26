@@ -1,6 +1,6 @@
 use lyweb::{*, error::*};
 
-use std::{error::Error, fmt};
+use std::{env, error::Error, fmt};
 
 use actix_web::{error, http::{header::ContentType, StatusCode}, HttpResponse};
 
@@ -60,6 +60,12 @@ impl fmt::Display for ApiError {
             ApiError::RequestError => "could not request API",
             ApiError::ParseError => "could not parse API response",
         })
+    }
+}
+
+impl From<env::VarError> for ApiError {
+    fn from(_: env::VarError) -> Self {
+        Self::RequestError
     }
 }
 
