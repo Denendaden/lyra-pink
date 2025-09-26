@@ -44,3 +44,39 @@ impl fmt::Display for HttpError {
         })
     }
 }
+
+// error when calling an API
+#[derive(Debug)]
+pub enum ApiError {
+    RequestError,
+    ParseError,
+}
+
+impl Error for ApiError {}
+
+impl fmt::Display for ApiError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            ApiError::RequestError => "could not request API",
+            ApiError::ParseError => "could not parse API response",
+        })
+    }
+}
+
+impl From<url::ParseError> for ApiError {
+    fn from(_: url::ParseError) -> Self {
+        Self::RequestError
+    }
+}
+
+impl From<reqwest::Error> for ApiError {
+    fn from(_: reqwest::Error) -> Self {
+        Self::RequestError
+    }
+}
+
+impl From<serde_json::Error> for ApiError {
+    fn from(_: serde_json::Error) -> Self {
+        Self::ParseError
+    }
+}
