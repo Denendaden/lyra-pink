@@ -81,9 +81,9 @@ async fn get_navy_moon_data() -> Result<NavyData, ApiError> {
                         if let Some(phen) = m.get("phen") &&
                                     let Some(time) = m.get("time") {
                             if phen.to_string() == "\"Rise\"" {
-                                navy_data.sunrise = Some(time.to_string().trim_matches('"').to_string());
+                                navy_data.moonrise = Some(time.to_string().trim_matches('"').to_string());
                             } else if phen.to_string() == "\"Set\"" {
-                                navy_data.sunset = Some(time.to_string().trim_matches('"').to_string());
+                                navy_data.moonset = Some(time.to_string().trim_matches('"').to_string());
                             }
                         }
                     }
