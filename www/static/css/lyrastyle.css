@@ -29,6 +29,10 @@ img {
     height: auto;
 }
 
+pre {
+    white-space: pre-wrap;
+}
+
 .split {
     display: flex;
     flex-flow: row;
@@ -44,7 +48,7 @@ img {
     padding-left: 8px;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (width < 992px) {
     .split {
         flex-flow: wrap;
     }
@@ -84,14 +88,14 @@ img {
     max-width: 30%;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width < 992px) {
     .photo-gallery img {
         flex: 40%;
         max-width: 50%;
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (width < 768px) {
     .photo-gallery img {
         flex: 100%;
         max-width: 100%;
@@ -107,7 +111,7 @@ img {
 }
 
 #sidebar {
-    width: 3cm;
+    width: 7em;
     text-align: right;
 }
 
