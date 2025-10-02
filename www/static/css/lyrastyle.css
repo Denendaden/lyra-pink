@@ -27,6 +27,7 @@ a:active {
 img {
     max-width: 100%;
     height: auto;
+    object-fit: cover;
 }
 
 pre {
@@ -75,30 +76,23 @@ pre {
 .photo-gallery {
     display: flex;
     flex-wrap: wrap;
-    padding: 0 4px;
     justify-content: center;
 }
 
-.photo-gallery img {
+.photo-gallery a {
     flex: 21%;
     padding: 0 4px;
-    margin-top: 8px;
+    margin-top: 4px;
     vertical-align: middle;
     width: 100%;
     max-width: 30%;
+    flex-grow: 1;
 }
 
 @media screen and (width < 992px) {
-    .photo-gallery img {
+    .photo-gallery a {
         flex: 40%;
         max-width: 50%;
-    }
-}
-
-@media screen and (width < 768px) {
-    .photo-gallery img {
-        flex: 100%;
-        max-width: 100%;
     }
 }
 

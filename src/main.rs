@@ -186,15 +186,21 @@ async fn photos(_req: HttpRequest) -> Result<HttpResponse, HttpError> {
     if let Ok(d) = photos_dir.read_dir() {
         for shoot in d {
             if let Ok(s) = shoot {
-                if s.path().is_dir() {
+                let thumbs_path = s.path().join("thumbs");
+                if thumbs_path.is_dir() {
                     let mut gallery_html = "<div class=\"photo-gallery\">".to_string();
-                    if let Ok(photos) = s.path().read_dir() {
-                        for photo in photos {
-                            if let Ok(p) = photo {
+                    let fullsize_path = PathBuf::from_iter(s.path().join("fullsize").components().skip(1));
+                    if let Ok(thumbs) = thumbs_path.read_dir() {
+                        for thumb in thumbs {
+                            if let Ok(t) = thumb {
                                 // remove first part of path (the www part)
-                                let path = PathBuf::from_iter(p.path().components().skip(1));
-                                let spath = path.to_string_lossy();
-                                gallery_html += &format!("<img src=\"{spath}\">").to_string();
+                                let tpath = PathBuf::from_iter(t.path().components().skip(1));
+                                let fpath = fullsize_path
+                                    .join(&tpath.file_name().unwrap_or(&std::ffi::OsString::new()));
+                                let stpath = tpath.to_string_lossy();
+                                let sfpath = fpath.to_string_lossy();
+
+                                gallery_html += &format!("<a href=\"{sfpath}\"><img src=\"{stpath}\"></a>").to_string();
                             }
                         }
                     }
@@ -234,7 +240,7 @@ async fn main() -> std::io::Result<()> {
             .route("/{path}", web::get().to(load_page))
             .service(Files::new("/static", "www/static"))
     })
-        .bind(("0.0.0.0", 5566))?
+        .bind(("0.0.0.0", 8000))?
         .run()
         .await
 }
